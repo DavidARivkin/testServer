@@ -1,0 +1,114 @@
+{
+  "children": [
+    {
+      "iuid": "9D55A0B2-49A4-48BC-8801-D99FDD4124C2",
+      "typeUid": "09A65A00-B809-4C8C-AD06-C0F14EC20A6C",
+      "typeName": "UM2CableChainChainSegment",
+      "name": "UM2CableChainChainSegment0",
+      "color": "#FFFFFFFF",
+      "pos": [
+        -38.57904249959314,
+        -44.40294131580217,
+        0
+      ],
+      "rot": [
+        0,
+        0,
+        0
+      ],
+      "sca": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "iuid": "94B7F9D8-4455-47D5-B0E9-8F9B42F4AF88",
+      "typeUid": "09A65A00-B809-4C8C-AD06-C0F14EC20A6C",
+      "typeName": "UM2CableChainChainSegment",
+      "name": "UM2CableChainChainSegment 1",
+      "color": "#FFFFFFFF",
+      "pos": [
+        -12.714747017200525,
+        17.76237548724245,
+        0
+      ],
+      "rot": [
+        0,
+        0,
+        0
+      ],
+      "sca": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "iuid": "1895664C-8C98-4878-900B-4830C6E618EF",
+      "typeUid": "09A65A00-B809-4C8C-AD06-C0F14EC20A6C",
+      "typeName": "UM2CableChainChainSegment",
+      "name": "UM2CableChainChainSegment 2",
+      "color": "#FFFFFFFF",
+      "pos": [
+        -69.11951504151168,
+        49.09705360156026,
+        0
+      ],
+      "rot": [
+        0,
+        0,
+        0
+      ],
+      "sca": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "iuid": "E552F0C6-A18B-4AF4-B2C0-D91A4964A67A",
+      "typeUid": "09A65A00-B809-4C8C-AD06-C0F14EC20A6C",
+      "typeName": "UM2CableChainChainSegment",
+      "name": "UM2CableChainChainSegment 3",
+      "color": "#FFFFFFFF",
+      "pos": [
+        34.103686794632935,
+        6.726047207789066,
+        0
+      ],
+      "rot": [
+        0,
+        0,
+        0
+      ],
+      "sca": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "iuid": "A8AF335A-C6AD-4DA2-A2E9-32D86AD82E22",
+      "typeUid": "09A65A00-B809-4C8C-AD06-C0F14EC20A6C",
+      "typeName": "UM2CableChainChainSegment",
+      "name": "UM2CableChainChainSegment 4",
+      "color": "#FFFFFFFF",
+      "pos": [
+        14.911473167553154,
+        73.21881546581972,
+        0
+      ],
+      "rot": [
+        0,
+        0,
+        0
+      ],
+      "sca": [
+        1,
+        1,
+        1
+      ]
+    }
+  ]
+}

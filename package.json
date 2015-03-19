@@ -1,0 +1,16 @@
+{
+  "name": "testServer",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mark 'kaosat-dev' Moissette",
+  "license": "MIT",
+  "devDependencies": {
+    "restify": "^3.0.1",
+    "object-assign": "^2.0.0",
+    "es6-shim": "^0.27.1"
+  }
+}
