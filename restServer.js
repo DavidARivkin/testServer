@@ -1,13 +1,15 @@
 'use strict'
 var os      = require('os');
+var fs      = require("fs");
 var es6shim = require('es6-shim');
 var restify = require('restify');
 var address = 3080;
 var prefix ="/api/";
+var userDataPath = "./userData/";
 
 var server  = restify.createServer();
 server.pre(restify.pre.sanitizePath());
-
+server.use(restify.CORS());
 
 var superParams = "";
 server.use(restify.bodyParser({
@@ -54,41 +56,7 @@ server.del(prefix+'hello/:name', function rm(req, res, next) {
  return next();
 });*/
 
-var designs = [
-  {
-  "name":"RobotoMaging",
-  "title":"RobotoMaging",
-  "description":"such a great design",
-  "version": "0.0.2",
-  "url":"youmagine.com/designs/authorName/RobotoMaging",
-  "authors":[
-    {
-      "name":"otherGirl",
-    "url": "www.mysite.com",
-    "email":"gg@bar.baz"
-    },
-    {
-    "name":"otherGuy",
-    "url": "???",
-    "email":"aGuy@bar.baz"
-   }
-  ],
-  "tags": ["youmagine", "superduperdesign"],
-  "licenses":[
-    "GPLV3",
-    "MIT",
-    "CC-BY"
-  ],
-  "meta":{
-    "state":"design",
-  },
-  //not part of the json
-  "documentsUri":"./documents",
-  "assembliesUri":"./assemblies",
-  "annotations": "./annotations"
-  }
-];
-
+var designs = [];
 var assemblies = {
   "RobotoMaging":[
       {
@@ -118,9 +86,15 @@ var assemblies = {
       ]
      }
   ]
-
 }
 
+//FIXME: obviously would not be stored like this
+designs = require(userDataPath+"designs.json");
+
+function writeDesigns(){
+  var strDesigns = JSON.stringify( designs );
+  fs.writeFileSync( userDataPath+"designs.json", strDesigns );
+}
 
 ////////////
 server.get('/api', function (req, res, next) {
@@ -175,6 +149,11 @@ server.post(prefix+'designs', function (req, res, next) {
   var design = Object.assign({}, DEFAULTS, params); 
   console.log("design", design);
   designs.push( design );
+  
+  //FIXME : just for testing?
+  fs.mkdirSync(userDataPath+"designs/"+name);
+  writeDesigns();
+  
   res.send(designs);
 });
 
@@ -216,6 +195,9 @@ server.patch(prefix+'designs/:_name', function (req, res, next) {
     }
     if( validFields.indexOf(pName) > -1) design[pName] = value; 
   } 
+  
+  writeDesigns();
+  
   res.send(design);
 });
 
@@ -232,6 +214,10 @@ server.del(prefix+'designs/:name', function (req, res, next) {
   //delete design
   var design = design[0];
   designs.splice( designs.indexOf( design ), 1);
+  
+  writeDesigns();
+  fs.rmdirSync(userDataPath+"designs/"+name);
+  
   res.send(200);
 });
 
@@ -240,7 +226,40 @@ server.del(prefix+'designs/:name', function (req, res, next) {
 ///documents
 server.get(prefix+'designs/:name/documents', function (req, res, next) {
   console.log("returning documents of",req.params.name);
-  res.send('documents !!');
+  
+  //FIXME ermm really ??
+  var docsPath = userDataPath+"designs/"+req.params.name;
+  var fsEntries = fs.readdirSync( docsPath );
+  fsEntries = fsEntries.filter( function( fsEntry ){
+    var fsEntryPath = docsPath +"/"+fsEntry;
+    return ( fs.lstatSync( fsEntryPath ).isFile( ) );
+  })
+  
+  /*.map( function( fsEntry ){
+    return docsPath +"/"+fsEntry;
+  });*/
+  
+  console.log("documents", fsEntries);
+  res.send(fsEntries);
+});
+
+server.post(prefix+'designs/:name/documents', function (req, res, next) {
+  console.log("posting documents of",req.params.name);
+  //req.files.data.name;
+  //req.files.data.path;
+  (Object.keys( req.files )).map( function( fileName ){
+    var file = req.files[ fileName ];
+    console.log("here",file);
+    var filePath = file.path;
+    var fileName = file.name;
+    console.log("gn", filePath, fileName);
+    var destPath = userDataPath+"designs/"+req.params.name+"/"+fileName;
+    //var upload = fs.readFileSync( req.files.data.path,'utf8' );
+    console.log("moving from", filePath ,"to", destPath);
+    fs.renameSync( filePath, destPath);  
+  });
+  
+  res.send(200);
 });
 
 //assemblies
@@ -257,10 +276,11 @@ server.post(prefix+'designs/:_name/assemblies', function (req, res, next) {
   //req.files.data.name;
   //req.files.data.path;
   if( req.files ){
-    var fs = require("fs");
+    var fPath = req.files.data.path;
     var _assemblies = fs.readFileSync( req.files.data.path,'utf8' );
     _assemblies = JSON.parse(_assemblies); 
     assemblies[ designName ] = _assemblies;
+    fs.unlinkSync( fPath );
   }
   //assemblies.push( 
   res.send( assemblies[ designName ] );
@@ -272,7 +292,6 @@ server.get(prefix+'designs/:_name/assemblies/:assemblyId', function (req, res, n
   console.log("returning assembly of",designName,assemblyId);
   res.send( assemblies[ designName ][assemblyId] );
 });
-
 
 
 ////////////start it up !
