@@ -33,6 +33,11 @@ server.use(restify.bodyParser({
     uploadDir: "./uploads",//os.path.absPath(os.tmpdir(),
     multiples: true
  }));
+ 
+ //for static files
+ //server.get(/\/api\/designs\/?.*/, restify.serveStatic({
+ // directory: './userData/designs/demo-design/',
+ //}));
 
 
 ////////////////////
@@ -59,32 +64,6 @@ server.del(prefix+'hello/:name', function rm(req, res, next) {
 var designs = [];
 var assemblies = {
   "RobotoMaging":[
-      {
-      "children": [
-        {
-          "iuid": "9D55A0B2-49A4-48BC-8801-D99FDD4124C2",
-          "typeUid": "09A65A00-B809-4C8C-AD06-C0F14EC20A6C",
-          "typeName": "UM2CableChainChainSegment",
-          "name": "UM2CableChainChainSegment0",
-          "color": "#FFFFFFFF",
-          "pos": [
-            -38.57904249959314,
-            -44.40294131580217,
-            0
-          ],
-          "rot": [
-            0,
-            0,
-            0
-          ],
-          "sca": [
-            1,
-            1,
-            1
-          ]
-        },
-      ]
-     }
   ]
 }
 
@@ -262,6 +241,30 @@ server.post(prefix+'designs/:name/documents', function (req, res, next) {
   res.send(200);
 });
 
+
+server.get(prefix+'designs/:_name/documents/:_docName', function (req, res, next) {
+  var params = req.params;
+  var designName = params._name;
+  var docName = params._docName;
+  
+  var destPath = userDataPath+"designs/"+designName+"/"+docName;
+  console.log("geting document",docName);
+  try{
+    var file = fs.readFileSync( destPath );
+  }
+  catch(error){
+    res.send(404);
+    return;
+  }
+  
+  res.writeHead(200, {
+    //'Content-Length': Buffer.byteLength(file),
+    //'Content-Type': 'text/plain'
+  });
+  res.write(file);
+  res.end();
+});
+
 //assemblies
 server.get(prefix+'designs/:name/assemblies', function (req, res, next) {
   var designName = req.params.name;
@@ -273,8 +276,6 @@ server.post(prefix+'designs/:_name/assemblies', function (req, res, next) {
   var designName = req.params._name;
   console.log("returning assemblies of",designName, req.params, req.files);
   
-  //req.files.data.name;
-  //req.files.data.path;
   if( req.files ){
     var fPath = req.files.data.path;
     var _assemblies = fs.readFileSync( req.files.data.path,'utf8' );
@@ -290,7 +291,31 @@ server.get(prefix+'designs/:_name/assemblies/:assemblyId', function (req, res, n
   var designName = req.params._name;
   var assemblyId = parseInt(req.params.assemblyId);
   console.log("returning assembly of",designName,assemblyId);
-  res.send( assemblies[ designName ][assemblyId] );
+  
+  //TODO deal with multiple assemblies
+  var fileName = "assemblies.json";
+  var destPath = userDataPath+"designs/"+designName+"/"+fileName;
+  var assembly = fs.readFileSync( destPath, "utf8");
+  assembly = JSON.parse( assembly );
+  res.send( assembly );
+  //res.send( assemblies[ designName ][assemblyId] );
+});
+
+server.post(prefix+'designs/:_name/assemblies/:assemblyId', function (req, res, next) {
+  var designName = req.params._name;
+  var assemblyId = parseInt(req.params.assemblyId);
+  var assemblyData = req.params.assembly;
+  console.log("assemblyData", assemblyData);
+  
+  if( assemblyData ) assemblyData = JSON.stringify( assemblyData );
+  console.log("assemblyData2", assemblyData);
+  //TODO deal with multiple assemblies
+  var fileName = "assemblies.json";
+  var destPath = userDataPath+"designs/"+designName+"/"+fileName;
+  fs.writeFileSync( destPath, assemblyData );
+  //console.log("posting assembly of",designName, assemblyId);
+  console.log("data recived", req.params );
+  res.send( "ok");//assemblies[ designName ][assemblyId] );
 });
 
 
